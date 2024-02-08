@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.ken.taipeitourtestproject.screen.home.HomeFragment"
+        android:label=""/>
+
+    <fragment
+        android:id="@+id/nav_attraction_info"
+        android:name="com.ken.taipeitourtestproject.screen.attractioninfo.AttractionInfoFragment"
+        android:label=""/>
+
+    <fragment
+        android:id="@+id/nav_attraction_web"
+        android:name="com.ken.taipeitourtestproject.screen.attractionweb.AttractionWebFragment"
+        android:label=""/>
+
+</navigation>

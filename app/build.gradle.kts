@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -49,6 +51,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    android.applicationVariants.all {
+        compileConfiguration.exclude(group = "com.intellij", module = "annotations")
+    }
 }
 
 dependencies {
@@ -70,8 +76,9 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.compiler) {
+        exclude(group = "com.intellij", module  = "annotations")
+    }
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
     implementation(libs.androidx.lifecycle.runtime.ktx)
