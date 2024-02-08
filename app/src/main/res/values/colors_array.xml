@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingDefaultResource">
+
+    <array name="loading_color">
+        <item>@color/progress_1</item>
+        <item>@color/progress_2</item>
+        <item>@color/progress_3</item>
+    </array>
+
+</resources>
