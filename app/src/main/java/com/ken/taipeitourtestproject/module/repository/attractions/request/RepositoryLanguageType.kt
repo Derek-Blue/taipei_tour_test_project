@@ -7,7 +7,8 @@ enum class RepositoryLanguageType(val tag: String) {
     JA("ja"),
     KO("ko"),
     ES("es"),
-    ID("id"),
+//    ID("id"), //api 目前顯示無效參數
+    ID("en"),
     TH("th"),
     VI("vi");
 

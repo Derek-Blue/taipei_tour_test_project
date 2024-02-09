@@ -1,9 +1,10 @@
 package com.ken.taipeitourtestproject.screen.home
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -12,13 +13,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ken.taipeitourtestproject.R
 import com.ken.taipeitourtestproject.base.BaseFragment
 import com.ken.taipeitourtestproject.databinding.FragmentHomeBinding
+import com.ken.taipeitourtestproject.screen.MainViewModel
 import com.ken.taipeitourtestproject.screen.home.adapter.AttractionsAdapter
+import com.ken.taipeitourtestproject.screen.home.data.LanguageType
 import com.ken.taipeitourtestproject.tools.recyclerview.LoadMoreRecyclerViewScrollListener
 import com.kyc.application.module.recyclerview.linearspacedecoration.LinearSpaceDecoration
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
@@ -27,6 +32,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<HomeViewModel>()
+    private val activityViewModel by activityViewModel<MainViewModel>()
 
     companion object {
         private const val ITEM_SPACE = 12
@@ -50,7 +56,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private fun initView() {
         binding.languageImageView.setOnClickDebounce {
-
+            showSelectLanguageDialog()
         }
         binding.attractionsRecyclerView.apply {
             val layoutManager = LinearLayoutManager(requireContext())
@@ -69,6 +75,19 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 )
             )
         }
+    }
+
+    private fun showSelectLanguageDialog() {
+        AlertDialog.Builder(requireContext())
+            .setCancelable(true)
+            .setItems(LanguageType.SELECT_ITEMS) { _, index ->
+                LanguageType.SELECT_ITEMS.getOrNull(index)?.let { select ->
+                    LanguageType.fromShowText(select)?.let {
+                        activityViewModel.onChangeLanguage(it)
+                    }
+                }
+            }
+            .show()
     }
 
     private fun observer() {

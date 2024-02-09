@@ -2,15 +2,16 @@ package com.ken.taipeitourtestproject.usecase.attractionlist
 
 import com.ken.taipeitourtestproject.module.repository.attractions.TaipeiTourAttractionRepository
 import com.ken.taipeitourtestproject.module.repository.attractions.request.RepositoryLanguageType
-import com.ken.taipeitourtestproject.module.repository.language.LanguageRepository
+import com.ken.taipeitourtestproject.screen.home.data.LanguageType
+import com.ken.taipeitourtestproject.tools.sharedpreference.MySharedPreferencesManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.scan
 
 class AttractionListUseCaseImpl(
-    private val languageRepository: LanguageRepository,
+    private val sharedPreferencesManager: MySharedPreferencesManager,
     private val taipeiTourAttractionRepository: TaipeiTourAttractionRepository
 ): AttractionListUseCase {
 
@@ -18,27 +19,19 @@ class AttractionListUseCaseImpl(
         private const val DEFAULT_START_PAGE = 1
     }
 
-    //cache data by Language
-    private val cacheMap: MutableMap<RepositoryLanguageType, List<UseCaseAttraction>> = mutableMapOf()
-    //record load more index page
-    private val nextPageMap: MutableMap<RepositoryLanguageType, Int> = mutableMapOf()
+    private var nextPage: Int = DEFAULT_START_PAGE
 
     private val loadMoreFlow = MutableSharedFlow<Unit>()
 
     override suspend fun subscribe(): Flow<List<UseCaseAttraction>> {
-        return languageRepository.getFlow().map {
-            val cacheList = cacheMap[it]
-            val newList = if (cacheList.isNullOrEmpty()) {
-                getDataFromRepository(it, DEFAULT_START_PAGE)
-            } else {
-                cacheList
-            }
-            UseCaseMediator(it, newList)
-        }.flatMapLatest { md ->
-            loadMoreFlow.scan(md.content) { accumulator, _ ->
-                val languageType = md.languageType
-                val nextPage = nextPageMap[languageType] ?: DEFAULT_START_PAGE
-                val more = getDataFromRepository(languageType, nextPage)
+        val language = sharedPreferencesManager.languageTypeTag
+        val languageType = LanguageType.fromShowText(language)
+        val requestLanguage = convertRepositoryTypeLanguage(languageType)
+        return flow {
+            emit(getDataFromRepository(requestLanguage, DEFAULT_START_PAGE))
+        }.flatMapLatest { initList ->
+            loadMoreFlow.scan(initList) { accumulator, _ ->
+                val more = getDataFromRepository(requestLanguage, nextPage)
                 if (more.isNotEmpty()) {
                     (accumulator + more).distinctBy { it.name }
                 } else {
@@ -75,17 +68,23 @@ class AttractionListUseCaseImpl(
                     )
                 }
             }
-            .onSuccess { result ->
-                val cache = cacheMap[languageType] ?: emptyList()
-                val newData = (cache + result).distinctBy { it.name }
-                cacheMap[languageType] = newData
-                nextPageMap[languageType] = page + 1
+            .onSuccess {
+                nextPage+=1
             }
             .getOrThrow()
     }
 
-    private data class UseCaseMediator(
-        val languageType: RepositoryLanguageType,
-        val content: List<UseCaseAttraction>
-    )
+    private fun convertRepositoryTypeLanguage(type: LanguageType): RepositoryLanguageType {
+        return when (type) {
+            LanguageType.ZH_TC -> RepositoryLanguageType.ZH_TC
+            LanguageType.ZH_CN -> RepositoryLanguageType.ZH_CN
+            LanguageType.EN -> RepositoryLanguageType.EN
+            LanguageType.JA -> RepositoryLanguageType.JA
+            LanguageType.KO -> RepositoryLanguageType.KO
+            LanguageType.TH -> RepositoryLanguageType.TH
+            LanguageType.ID -> RepositoryLanguageType.ID
+            LanguageType.ES -> RepositoryLanguageType.EN
+            LanguageType.VI -> RepositoryLanguageType.VI
+        }
+    }
 }

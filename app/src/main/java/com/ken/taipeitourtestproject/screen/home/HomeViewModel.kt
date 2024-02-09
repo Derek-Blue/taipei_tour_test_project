@@ -2,7 +2,6 @@ package com.ken.taipeitourtestproject.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ken.taipeitourtestproject.module.repository.language.LanguageRepository
 import com.ken.taipeitourtestproject.screen.home.data.AttractionShowData
 import com.ken.taipeitourtestproject.usecase.attractionlist.AttractionListUseCase
 import com.ken.taipeitourtestproject.usecase.attractionlist.UseCaseAttraction
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val languageRepository: LanguageRepository,
     private val attractionListUseCase: AttractionListUseCase
 ): ViewModel() {
 
