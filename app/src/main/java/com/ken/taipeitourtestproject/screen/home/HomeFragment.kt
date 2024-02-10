@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ken.taipeitourtestproject.R
 import com.ken.taipeitourtestproject.base.BaseFragment
 import com.ken.taipeitourtestproject.databinding.FragmentHomeBinding
+import com.ken.taipeitourtestproject.module.ext.navigateScreen
 import com.ken.taipeitourtestproject.screen.MainViewModel
+import com.ken.taipeitourtestproject.screen.attractioninfo.AttractionInfoFragment
 import com.ken.taipeitourtestproject.screen.home.adapter.AttractionsAdapter
 import com.ken.taipeitourtestproject.screen.home.data.LanguageType
 import com.ken.taipeitourtestproject.tools.recyclerview.LoadMoreRecyclerViewScrollListener
@@ -41,7 +43,10 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private val attractionsAdapter by lazy {
         AttractionsAdapter { item ->
             if (isClickSafe()) {
-
+                val bundle = Bundle().apply {
+                    putParcelable(AttractionInfoFragment.ARG_INFO_ITEM_KEY, item)
+                }
+                navigateScreen(R.id.nav_attraction_info, bundle)
             }
         }
     }

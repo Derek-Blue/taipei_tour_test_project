@@ -1,5 +1,9 @@
 package com.ken.taipeitourtestproject.screen.home.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class AttractionShowData(
     val id: Long,
     val name: String,
@@ -11,4 +15,4 @@ data class AttractionShowData(
     val lastUpdateTime: String,
     val url: String,
     val images: List<String>,
-)
+): Parcelable
