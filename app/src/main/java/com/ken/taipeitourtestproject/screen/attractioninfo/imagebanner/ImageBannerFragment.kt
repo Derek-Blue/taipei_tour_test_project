@@ -37,6 +37,8 @@ class ImageBannerFragment: BaseFragment(R.layout.fragment_image_banner) {
     }
 
     private fun initView() {
+        binding.emptyTextView.isVisible = imageUrl.isEmpty()
+        binding.loadingProgress.isVisible = imageUrl.isNotEmpty()
         binding.contentImageView.isVisible = imageUrl.isNotEmpty()
         if (imageUrl.isNotEmpty()) {
             Glide.with(requireContext())

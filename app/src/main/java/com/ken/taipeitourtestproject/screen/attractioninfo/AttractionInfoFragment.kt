@@ -2,33 +2,41 @@ package com.ken.taipeitourtestproject.screen.attractioninfo
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.SpannedString
 import android.text.method.LinkMovementMethod
-import android.text.method.ScrollingMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager2.widget.ViewPager2
 import com.ken.taipeitourtestproject.R
 import com.ken.taipeitourtestproject.base.BaseFragment
 import com.ken.taipeitourtestproject.databinding.FragmentAttractionInfoBinding
 import com.ken.taipeitourtestproject.module.ext.finishScreen
+import com.ken.taipeitourtestproject.module.ext.navigateScreen
 import com.ken.taipeitourtestproject.screen.attractioninfo.imagebanner.ImageBannerData
 import com.ken.taipeitourtestproject.screen.attractioninfo.imagebanner.ImageBannerViewPagerAdapter
+import com.ken.taipeitourtestproject.screen.attractionweb.AttractionWebFragment.Companion.ARG_URL_KEY
 import com.ken.taipeitourtestproject.screen.home.data.AttractionShowData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
 
@@ -45,21 +53,38 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         arguments?.getParcelable(ARG_INFO_ITEM_KEY) as? AttractionShowData
     }
 
-    private val viewPagerAdapter by lazy {
-        ImageBannerViewPagerAdapter(this)
-    }
+    private lateinit var viewPagerAdapter : ImageBannerViewPagerAdapter
+
+    private val viewModel by viewModel<AttractionInfoViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAttractionInfoBinding.bind(view)
 
         initView()
+        observer()
+    }
+
+    private fun observer() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                launch {
+                    viewModel.viewState.map {
+                        it.currentIndex
+                    }.distinctUntilChanged().collectLatest {
+                        binding.imageViewPager.currentItem = it
+                    }
+                }
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
         if (showItem == null) finishScreen()
         val item = showItem!!
+        viewPagerAdapter = ImageBannerViewPagerAdapter(this)
 
         binding.titleTextView.text = item.name
 
@@ -69,13 +94,14 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
 
         val isShowPagerDot = item.images.size >= 2
         binding.imageViewPager.apply {
-            offscreenPageLimit = 2
+            offscreenPageLimit = 1
             adapter = viewPagerAdapter
             isUserInputEnabled = isShowPagerDot
             if (isShowPagerDot) {
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
                     override fun onPageSelected(position: Int) {
                         super.onPageSelected(position)
+                        viewModel.setCurrentIndex(position)
                         val realPosition = position % viewPagerAdapter.getRealCount()
                         val tab = binding.dotTabLayout.getTabAt(realPosition)
                         tab?.select()
@@ -106,6 +132,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
 
         binding.infoTextView.text = getInfoStringBuilder(item)
         binding.infoTextView.movementMethod = LinkMovementMethod.getInstance()
+        autoScrollImage()
     }
 
     private fun setImageViewPager(images: List<String>) {
@@ -128,8 +155,12 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         }
         viewPagerAdapter.submitList(showItems) {
             if (images.size >= 2) {
-                binding.imageViewPager.setCurrentItem(images.size * 100, false)
-                autoScrollImage()
+                val stateIndex = viewModel.getCurrentIndex()
+                if (stateIndex > 0) {
+                    binding.imageViewPager.setCurrentItem(stateIndex, false)
+                } else {
+                    binding.imageViewPager.setCurrentItem(images.size * 100, false)
+                }
             }
         }
     }
@@ -139,7 +170,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         autoScrollJob = lifecycleScope.launch {
             delay(3000)
             val current = _binding?.imageViewPager?.currentItem ?: 0
-            _binding?.imageViewPager?.currentItem = current + 1
+            viewModel.setCurrentIndex(current + 1)
         }
     }
 
@@ -168,12 +199,21 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
             if (item.url.isNotEmpty()) {
                 append(item.url, object : ClickableSpan(){
                     override fun onClick(widget: View) {
-                        Log.d("TAG_", "onClick: ${item.url}")
+                        val bundle = Bundle().apply {
+                            putString(ARG_URL_KEY, item.url)
+                        }
+                        navigateScreen(R.id.nav_attraction_web, bundle)
                     }
                 }, SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
                 append("\n\n")
             }
         }
+    }
+
+    override fun onPause() {
+        autoScrollJob?.cancel()
+        autoScrollJob = null
+        super.onPause()
     }
 
     override fun onDestroyView() {

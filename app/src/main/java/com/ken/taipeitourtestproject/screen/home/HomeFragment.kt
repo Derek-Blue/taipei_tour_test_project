@@ -2,7 +2,6 @@ package com.ken.taipeitourtestproject.screen.home
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
@@ -87,9 +85,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             .setCancelable(true)
             .setItems(LanguageType.SELECT_ITEMS) { _, index ->
                 LanguageType.SELECT_ITEMS.getOrNull(index)?.let { select ->
-                    LanguageType.fromShowText(select)?.let {
-                        activityViewModel.onChangeLanguage(it)
-                    }
+                    activityViewModel.onChangeLanguage(LanguageType.fromShowText(select))
                 }
             }
             .show()
