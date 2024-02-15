@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TaipeiTourTestProject</string>
+    <string name="home_title">台北観光サイト</string>
+    <string name="loading_attraction">Loading…</string>
+</resources>

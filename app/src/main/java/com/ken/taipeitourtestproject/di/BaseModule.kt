@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.ken.taipeitourtestproject.tools.sharedpreference.MySharedPreferencesManager
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -16,8 +18,11 @@ val baseModule = module {
     single { provideKotlinJson() }
 
     single { createDataStore(androidContext()) }
+
+    single { MySharedPreferencesManager(androidContext()) }
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 fun provideKotlinJson(): Json {
     return Json {
         encodeDefaults = true

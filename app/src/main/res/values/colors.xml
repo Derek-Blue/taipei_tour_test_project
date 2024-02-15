@@ -2,4 +2,18 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="toolbar_title">#FAFAFA</color>
+    <color name="toolbar_background">#0080FF</color>
+    <color name="status_background">#2894FF</color>
+
+    <color name="empty_image_background">#46A3FF</color>
+
+    <color name="primary_text">#272727</color>
+    <color name="secondary_text">#4F4F4F</color>
+
+    <color name="progress_1">#B9B973</color>
+    <color name="progress_2">#7AFEC6</color>
+    <color name="progress_3">#FF8F59</color>
+
 </resources>

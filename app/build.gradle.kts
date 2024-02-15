@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.npm.includedRange
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -49,6 +51,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    android.applicationVariants.all {
+        compileConfiguration.exclude(group = "com.intellij", module = "annotations")
+    }
 }
 
 dependencies {
@@ -60,18 +66,21 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.gson)
     implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.glide)
     implementation(libs.retrofit2)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.androidx.preference)
     implementation(libs.datastore)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.compiler) {
+        exclude(group = "com.intellij", module  = "annotations")
+    }
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
     implementation(libs.androidx.lifecycle.runtime.ktx)

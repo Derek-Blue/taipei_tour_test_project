@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/iconImageView"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="12dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/black"
+        tools:visibility="gone" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/emptyImageConstraintLayout"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="12dp"
+        android:background="@color/empty_image_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:textSize="16dp"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:text="Taipei\nTour\n(empty image)"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:ignore="HardcodedText,SpUsage" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="emptyImageConstraintLayout, iconImageView" />
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:maxLines="2"
+        android:textColor="@color/primary_text"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/rightImageView"
+        app:layout_constraintStart_toEndOf="@+id/barrier"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpUsage"
+        tools:text="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+
+    <TextView
+        android:id="@+id/descriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@color/secondary_text"
+        android:textSize="14dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rightImageView"
+        app:layout_constraintStart_toEndOf="@+id/barrier"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+        tools:ignore="SpUsage"
+        tools:text="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/rightImageView"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/icon_chevron_right"
+        android:tint="@color/primary_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbarConstraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/toolbar_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/backImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:paddingHorizontal="12dp"
+            android:src="@drawable/icon_back"
+            android:tint="@color/toolbar_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="12dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/toolbar_title"
+            android:textSize="20sp"
+            app:autoSizeMaxTextSize="20dp"
+            app:autoSizeMinTextSize="12dp"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/backImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="XXXXXXXXXXXXXXXXXXX" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/imageViewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.68"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarConstraintLayout" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/dotTabLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewPager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tabBackground="@drawable/dot_state_selector"
+        app:tabIndicatorHeight="0dp"
+        app:tabMaxWidth="12dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewPager">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/infoTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="16dp"
+                android:textColor="@color/secondary_text"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.ConnectionSpec
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
@@ -44,5 +45,8 @@ fun createOkhttp(): OkHttpClient {
         .callTimeout(30L, TimeUnit.SECONDS)
         .readTimeout(30L, TimeUnit.SECONDS)
         .writeTimeout(30L, TimeUnit.SECONDS)
+        .addInterceptor( HttpLoggingInterceptor()
+            .setLevel(HttpLoggingInterceptor.Level.BODY)
+        )
         .build()
 }
