@@ -8,7 +8,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
-import android.util.Log
 import android.view.View
 import android.widget.AbsListView
 import android.widget.LinearLayout
@@ -48,7 +47,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
     private var autoScrollJob: Job? = null
 
     private val showItem by lazy {
-        arguments?.getParcelable(ARG_INFO_ITEM_KEY) as? AttractionShowData
+        arguments?.getParcelable(ARG_INFO_ITEM_KEY) as? AttractionShowData.Item
     }
 
     private lateinit var viewPagerAdapter : ImageBannerViewPagerAdapter
@@ -191,7 +190,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         }
     }
 
-    private fun getInfoStringBuilder(item: AttractionShowData): SpannedString {
+    private fun getInfoStringBuilder(item: AttractionShowData.Item): SpannedString {
         return buildSpannedString {
             append(item.name)
             setSpan(RelativeSizeSpan(1.5f),

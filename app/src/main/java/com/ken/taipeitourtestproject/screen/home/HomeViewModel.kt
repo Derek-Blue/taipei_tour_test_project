@@ -35,7 +35,10 @@ class HomeViewModel(
                 attractionListUseCase.subscribe()
                     .onEach {
                         _viewState.update {
-                            currentState.copy(isProgress = false)
+                            currentState.copy(
+                                showItems = currentState.attractionList,
+                                isProgress = false
+                            )
                         }
                     }
                     .map { useCase ->
@@ -45,7 +48,10 @@ class HomeViewModel(
                 it.stackTrace
             }.collectLatest { newList ->
                 _viewState.update {
-                    currentState.copy(attractionList = newList)
+                    currentState.copy(
+                        attractionList = newList,
+                        showItems = newList
+                    )
                 }
             }
         }
@@ -54,15 +60,23 @@ class HomeViewModel(
     fun onLoadMore() {
         viewModelScope.launch {
             _viewState.update {
-                currentState.copy(isProgress = true)
+                val showItems = if (currentState.attractionList.isEmpty()) {
+                    emptyList()
+                } else {
+                    currentState.attractionList + listOf(AttractionShowData.Progress)
+                }
+                currentState.copy(
+                    isProgress = true,
+                    showItems = showItems
+                )
             }
             attractionListUseCase.loadMore()
         }
     }
 
-    private fun convertShowData(listUseCase: List<UseCaseAttraction>): List<AttractionShowData> {
+    private fun convertShowData(listUseCase: List<UseCaseAttraction>): List<AttractionShowData.Item> {
         return listUseCase.map {
-            AttractionShowData(
+            AttractionShowData.Item(
                 it.id,
                 it.name,
                 it.introduction,

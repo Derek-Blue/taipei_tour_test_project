@@ -1,7 +1,6 @@
 package com.ken.taipeitourtestproject.screen.home.adapter
 
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ken.taipeitourtestproject.R
 import com.ken.taipeitourtestproject.databinding.ItemHomeAttractionBinding
@@ -9,7 +8,7 @@ import com.ken.taipeitourtestproject.screen.home.data.AttractionShowData
 
 class AttractionsViewHolder(
     private val binding: ItemHomeAttractionBinding
-): RecyclerView.ViewHolder(binding.root) {
+): BaseAttractionsViewHolder(binding.root) {
 
     private var onPositionClick: ((Int) -> Unit)? = null
 
@@ -19,10 +18,11 @@ class AttractionsViewHolder(
         }
     }
 
-    fun bind(item: AttractionShowData, onClickEvent: (Int) -> Unit) {
+    override fun bind(data: AttractionShowData, onClickEvent: ((Int) -> Unit)?) {
         this.onPositionClick = onClickEvent
+        if (data !is AttractionShowData.Item) return
 
-        val image = item.images.firstOrNull()
+        val image = data.images.firstOrNull()
         if (image.isNullOrBlank()) {
             binding.emptyImageConstraintLayout.isVisible = true
             binding.iconImageView.isVisible = false
@@ -35,11 +35,11 @@ class AttractionsViewHolder(
                 .into(binding.iconImageView)
         }
 
-        binding.titleTextView.text = item.name
-        binding.descriptionTextView.text = item.introduction
+        binding.titleTextView.text = data.name
+        binding.descriptionTextView.text = data.introduction
     }
 
-    fun recycler() {
+    override fun recycle() {
         onPositionClick = null
     }
 }

@@ -16,6 +16,7 @@ import com.ken.taipeitourtestproject.module.ext.navigateScreen
 import com.ken.taipeitourtestproject.screen.MainViewModel
 import com.ken.taipeitourtestproject.screen.attractioninfo.AttractionInfoFragment
 import com.ken.taipeitourtestproject.screen.home.adapter.AttractionsAdapter
+import com.ken.taipeitourtestproject.screen.home.data.AttractionShowData
 import com.ken.taipeitourtestproject.screen.home.data.LanguageType
 import com.ken.taipeitourtestproject.tools.recyclerview.LoadMoreRecyclerViewScrollListener
 import com.kyc.application.module.recyclerview.linearspacedecoration.LinearSpaceDecoration
@@ -40,7 +41,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private val attractionsAdapter by lazy {
         AttractionsAdapter { item ->
-            if (isClickSafe()) {
+            if (item is AttractionShowData.Item && isClickSafe()) {
                 val bundle = Bundle().apply {
                     putParcelable(AttractionInfoFragment.ARG_INFO_ITEM_KEY, item)
                 }
@@ -105,7 +106,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
                 launch {
                     viewModel.viewState.map {
-                        it.attractionList
+                        it.showItems
                     }.distinctUntilChanged().collectLatest {
                         if (it.isNotEmpty()) {
                             attractionsAdapter.submitList(it)
