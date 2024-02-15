@@ -9,9 +9,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
@@ -54,6 +52,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
     }
 
     private lateinit var viewPagerAdapter : ImageBannerViewPagerAdapter
+    private lateinit var showImages: List<String>
 
     private val viewModel by viewModel<AttractionInfoViewModel>()
 
@@ -73,7 +72,9 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
                     viewModel.viewState.map {
                         it.currentIndex
                     }.distinctUntilChanged().collectLatest {
-                        binding.imageViewPager.currentItem = it
+                        if (it != binding.imageViewPager.currentItem) {
+                            binding.imageViewPager.currentItem = it
+                        }
                     }
                 }
             }
@@ -85,6 +86,7 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         if (showItem == null) finishScreen()
         val item = showItem!!
         viewPagerAdapter = ImageBannerViewPagerAdapter(this)
+        showImages = convertShowImages(item.images)
 
         binding.titleTextView.text = item.name
 
@@ -92,19 +94,29 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
             finishScreen()
         }
 
-        val isShowPagerDot = item.images.size >= 2
+        val isInfinityScroll = showImages.size >= 2
         binding.imageViewPager.apply {
             offscreenPageLimit = 1
             adapter = viewPagerAdapter
-            isUserInputEnabled = isShowPagerDot
-            if (isShowPagerDot) {
+            isUserInputEnabled = isInfinityScroll
+            if (isInfinityScroll) {
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
                     override fun onPageSelected(position: Int) {
                         super.onPageSelected(position)
-                        viewModel.setCurrentIndex(position)
-                        val realPosition = position % viewPagerAdapter.getRealCount()
-                        val tab = binding.dotTabLayout.getTabAt(realPosition)
-                        tab?.select()
+                        when (position) {
+                            0 -> {
+                                binding.imageViewPager.setCurrentItem(showImages.lastIndex - 1, false)
+                            }
+                            showImages.lastIndex -> {
+                                binding.imageViewPager.setCurrentItem(1, false)
+                            }
+                            else -> {
+                                viewModel.setCurrentIndex(position)
+                                val realPosition = position - 1
+                                val tab = binding.dotTabLayout.getTabAt(realPosition)
+                                tab?.select()
+                            }
+                        }
                     }
 
                     override fun onPageScrollStateChanged(state: Int) {
@@ -117,8 +129,8 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
             }
         }
 
-        binding.dotTabLayout.isVisible = isShowPagerDot
-        if (isShowPagerDot) {
+        binding.dotTabLayout.isVisible = isInfinityScroll
+        if (isInfinityScroll) {
             for (i in 0 until item.images.size) {
                 binding.dotTabLayout.addTab(binding.dotTabLayout.newTab())
             }
@@ -128,11 +140,21 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
                 tabStrip.getChildAt(i).setOnTouchListener { _, _ -> true }
             }
         }
-        setImageViewPager(item.images)
+        setImageViewPager(showImages)
 
         binding.infoTextView.text = getInfoStringBuilder(item)
         binding.infoTextView.movementMethod = LinkMovementMethod.getInstance()
         autoScrollImage()
+    }
+
+    private fun convertShowImages(images: List<String>): List<String> {
+        return if (images.size <= 1) {
+            images
+        } else {
+            val first = images.first()
+            val last = images.last()
+            listOf(last) + images + listOf(first)
+        }
     }
 
     private fun setImageViewPager(images: List<String>) {
@@ -140,27 +162,15 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
             images.isEmpty() -> listOf(ImageBannerData(0, ""))
             images.size == 1 -> listOf(ImageBannerData(0, images.first()))
             else -> {
-                when (images.size) {
-                    2 -> (images + images + images).mapIndexed { index, url ->
-                        ImageBannerData(index, url)
-                    }
-                    3, 4, 5 -> (images + images).mapIndexed { index, url ->
-                        ImageBannerData(index, url)
-                    }
-                    else -> images.mapIndexed { index, url ->
-                        ImageBannerData(index, url)
-                    }
+                images.mapIndexed { index, url ->
+                    ImageBannerData(index, url)
                 }
             }
         }
         viewPagerAdapter.submitList(showItems) {
             if (images.size >= 2) {
                 val stateIndex = viewModel.getCurrentIndex()
-                if (stateIndex > 0) {
-                    binding.imageViewPager.setCurrentItem(stateIndex, false)
-                } else {
-                    binding.imageViewPager.setCurrentItem(images.size * 100, false)
-                }
+                binding.imageViewPager.setCurrentItem(stateIndex, false)
             }
         }
     }
@@ -169,8 +179,15 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         autoScrollJob?.cancel()
         autoScrollJob = lifecycleScope.launch {
             delay(3000)
-            val current = _binding?.imageViewPager?.currentItem ?: 0
-            viewModel.setCurrentIndex(current + 1)
+            val current = _binding?.imageViewPager?.currentItem ?: 1
+            if (current + 1 >= showImages.lastIndex) {
+                _binding?.imageViewPager?.let {
+                    it.setCurrentItem(1, false)
+                    autoScrollImage()
+                }
+            } else {
+                _binding?.imageViewPager?.currentItem = current + 1
+            }
         }
     }
 
