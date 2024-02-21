@@ -24,9 +24,7 @@ class AttractionListUseCaseImpl(
     private val loadMoreFlow = MutableSharedFlow<Unit>()
 
     override suspend fun subscribe(): Flow<List<UseCaseAttraction>> {
-        val language = sharedPreferencesManager.languageTypeTag
-        val languageType = LanguageType.fromShowText(language)
-        val requestLanguage = convertRepositoryTypeLanguage(languageType)
+        val requestLanguage = getRepositoryTypeLanguage()
         return flow {
             emit(getDataFromRepository(requestLanguage, DEFAULT_START_PAGE))
         }.flatMapLatest { initList ->
@@ -74,8 +72,9 @@ class AttractionListUseCaseImpl(
             .getOrThrow()
     }
 
-    private fun convertRepositoryTypeLanguage(type: LanguageType): RepositoryLanguageType {
-        return when (type) {
+    private fun getRepositoryTypeLanguage(): RepositoryLanguageType {
+        val language = sharedPreferencesManager.languageTypeTag
+        return when (LanguageType.fromShowText(language)) {
             LanguageType.ZH_TC -> RepositoryLanguageType.ZH_TC
             LanguageType.ZH_CN -> RepositoryLanguageType.ZH_CN
             LanguageType.EN -> RepositoryLanguageType.EN

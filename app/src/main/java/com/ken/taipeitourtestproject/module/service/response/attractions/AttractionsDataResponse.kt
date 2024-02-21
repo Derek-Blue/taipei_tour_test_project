@@ -1,4 +1,4 @@
-package com.ken.taipeitourtestproject.module.service.response
+package com.ken.taipeitourtestproject.module.service.response.attractions
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

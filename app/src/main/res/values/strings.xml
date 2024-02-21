@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">TaipeiTourTestProject</string>
     <string name="home_title">台北旅遊</string>
+    <string name="news_title">最新消息</string>
+    <string name="attractions_title">遊憩景點</string>
+    <string name="read_more">閱讀更多…</string>
     <string name="loading_attraction">Loading…</string>
 </resources>
