@@ -1,15 +1,21 @@
 package com.ken.taipeitourtestproject.screen.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ken.taipeitourtestproject.screen.home.data.AttractionShowData
+import com.ken.taipeitourtestproject.screen.home.news.NewsShowData
 import com.ken.taipeitourtestproject.usecase.attractionlist.AttractionListUseCase
 import com.ken.taipeitourtestproject.usecase.attractionlist.UseCaseAttraction
+import com.ken.taipeitourtestproject.usecase.news.NewsUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -18,18 +24,32 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val attractionListUseCase: AttractionListUseCase
+    private val attractionListUseCase: AttractionListUseCase,
+    private val newsUseCase: NewsUseCase
 ): ViewModel() {
 
     private val _viewState = MutableStateFlow(HomeViewState())
     private val currentState get() = _viewState.value
     val viewState = _viewState.asStateFlow()
 
+    private val _showUrlFlow = MutableSharedFlow<String>()
+    val showUrlFlow = _showUrlFlow.asSharedFlow()
+
     init {
         viewModelScope.launch {
-            flowOf(Unit).onStart {
+            flow {
+                val news = newsUseCase.getHomePageNews().getOrThrow()
+                val initNews = news.map {
+                    NewsShowData(it.title, it.description, it.url)
+                }
+                emit(initNews)
+            }.onStart {
                 _viewState.update {
                     currentState.copy(isProgress = true)
+                }
+            }.onEach { initNews ->
+                _viewState.update {
+                    currentState.copy(newsShowData = initNews)
                 }
             }.flatMapLatest {
                 attractionListUseCase.subscribe()
@@ -71,6 +91,12 @@ class HomeViewModel(
                 )
             }
             attractionListUseCase.loadMore()
+        }
+    }
+
+    fun showNewsWebView(url: String) {
+        viewModelScope.launch {
+            _showUrlFlow.emit(url)
         }
     }
 

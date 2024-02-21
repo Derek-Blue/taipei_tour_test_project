@@ -1,14 +1,14 @@
-package com.ken.taipeitourtestproject.module.service.response
+package com.ken.taipeitourtestproject.module.service.response.news
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AttractionsResponse(
+data class NewsResponse(
 
     @SerialName("total")
     val total: Long? = null,
 
     @SerialName("data")
-    val data: List<AttractionsDataResponse>? = null,
+    val data: List<NewsDataResponse>? = null,
 )

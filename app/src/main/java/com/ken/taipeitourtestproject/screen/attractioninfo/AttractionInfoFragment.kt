@@ -226,6 +226,11 @@ class AttractionInfoFragment: BaseFragment(R.layout.fragment_attraction_info) {
         }
     }
 
+    override fun onResume() {
+        autoScrollImage()
+        super.onResume()
+    }
+
     override fun onPause() {
         autoScrollJob?.cancel()
         autoScrollJob = null

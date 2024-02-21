@@ -1,6 +1,7 @@
 package com.ken.taipeitourtestproject.module.service
 
-import com.ken.taipeitourtestproject.module.service.response.AttractionsResponse
+import com.ken.taipeitourtestproject.module.service.response.attractions.AttractionsResponse
+import com.ken.taipeitourtestproject.module.service.response.news.NewsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -15,4 +16,11 @@ interface TaipeiTourService {
         @Path("language") language: String,
         @Query("page") page: Int
     ): Response<AttractionsResponse>
+
+    @Headers("Accept: application/json")
+    @GET("open-api/{language}/Events/News")
+    suspend fun getNews(
+        @Path("language") language: String,
+        @Query("page") page: Int
+    ): Response<NewsResponse>
 }
